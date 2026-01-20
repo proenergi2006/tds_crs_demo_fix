@@ -278,7 +278,7 @@ private function saveQrSvgToStorage(string|array $payload, int $idPenawaran): ar
             'items.produk.jenis',
             'items.produk.ukuran.satuan',
             'produk_harga', // relasi baru
-            'ongkos',
+            'ongkos.volume', // ✅
         ])->findOrFail($id);
 
         if (!$penawaran->produk_harga && $penawaran->items->isNotEmpty()) {
@@ -303,11 +303,13 @@ private function saveQrSvgToStorage(string|array $payload, int $idPenawaran): ar
             'masa_berlaku'         => 'required|date',
             'sampai_dengan'        => 'required|date|after_or_equal:masa_berlaku',
 
-                'ongkos' => 'nullable|array',
-            'ongkos.*.id_angkut_wilayah' => 'required|exists:wilayah_angkuts,id',
-            'ongkos.*.id_transportir' => 'required|exists:transportirs,id',
-            'ongkos.*.id_volume' => 'required|numeric|min:0',
-            'ongkos.*.ongkos' => 'required|numeric|min:0',
+              // ===== ONGKOS =====
+        'ongkos' => 'nullable|array',
+       'ongkos.*.jenis' => 'required|in:KAPAL,TRUCK', // ✅ aktifkan
+        'ongkos.*.id_angkut_wilayah' => 'required|exists:wilayah_angkuts,id',
+        'ongkos.*.id_transportir' => 'required|exists:transportirs,id',
+        'ongkos.*.id_volume' => 'required|exists:volumes,id_volume', 
+        'ongkos.*.ongkos' => 'required|numeric|min:0',
 
 
             'items'                => 'required|array|min:1',
@@ -406,7 +408,8 @@ private function saveQrSvgToStorage(string|array $payload, int $idPenawaran): ar
                          'penawaran_id'   => $penawaran->id_penawaran, // 🔥 WAJIB
                        'wilayah_id'     => $o['id_angkut_wilayah'], // ✅ mapping
                         'transportir_id' => $o['id_transportir'],
-                        'volume'         => $o['id_volume'],
+                        'jenis'          => $o['jenis'], 
+                     'volume_id' => $o['id_volume'], 
                         'ongkos'         => $o['ongkos'],
                       
                     ]);
@@ -476,9 +479,10 @@ $penawaran->forceFill(['qr_code' => $saved['url']])->save();
             'sampai_dengan'        => 'required|date|after_or_equal:masa_berlaku',
 
           'ongkos' => 'nullable|array',
+          'ongkos.*.jenis' => 'required|in:KAPAL,TRUCK', // ✅ aktifkan
           'ongkos.*.id_angkut_wilayah' => 'required|exists:wilayah_angkuts,id',
           'ongkos.*.id_transportir' => 'required|exists:transportirs,id',
-          'ongkos.*.id_volume' => 'required|numeric|min:0',
+       'ongkos.*.id_volume' => 'required|exists:volumes,id_volume',  // ✅
             'ongkos.*.ongkos' => 'required|numeric|min:0',
 
 
@@ -561,6 +565,22 @@ $penawaran->forceFill(['qr_code' => $saved['url']])->save();
         try {
             $penawaran->update($data);
 
+            // ✅ RESET DISPOSISI & APPROVAL karena penawaran diubah
+                $penawaran->forceFill([
+                    'status'             => 'draft', // opsional kalau mau status juga balik draft
+                    'disposisi_penawaran'=> 0,       // sesuai permintaan kamu (draft)
+
+                    // BM reset
+                    'bm_result'          => 0,
+                    'bm_tanggal'         => now(),
+                    'catatan_verifikasi' => null,
+
+                    // OM reset (pastikan kolomnya ada di tabel & model)
+                    'om_result'          => 0,
+                    'om_tanggal'         => now(),
+                    'catatan_om'         => null,
+                ])->save();
+
             $penawaran->ongkos()->delete();
 
         if ($request->has('ongkos')) {
@@ -569,7 +589,9 @@ $penawaran->forceFill(['qr_code' => $saved['url']])->save();
                     'penawaran_id'   => $penawaran->id_penawaran, // 🔥 WAJIB
                     'wilayah_id'     => $o['id_angkut_wilayah'], // ✅ mapping
                         'transportir_id' => $o['id_transportir'],
-                        'volume'         => $o['id_volume'],
+                        'jenis'          => $o['jenis'],    
+                      'volume_id' => $o['id_volume'],
+
                         'ongkos'         => $o['ongkos'],
                 ]);
             }
@@ -924,7 +946,7 @@ public function ajukan($id)
         ], 500);
     }
 }
-    
+
 
     /** POST /api/penawarans/{id}/tolak-bm */
     public function tolakbm(Request $request, $id)
@@ -1183,8 +1205,6 @@ public function previewPdfMultiLang(Request $request, $id)
     $suffix = $lang === 'en' ? 'EN' : 'ID';
     return $pdf->stream("Quotation-{$safeNomor}-{$suffix}.pdf");
 }
-
-
 
 
 

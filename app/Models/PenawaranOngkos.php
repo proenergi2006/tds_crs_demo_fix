@@ -12,7 +12,8 @@ class PenawaranOngkos extends Model
         'penawaran_id',
         'wilayah_id',
         'transportir_id',
-        'volume',
+        'volume_id',
+        'jenis',        // ✅ tambah
         'ongkos',
     ];
 
@@ -20,4 +21,10 @@ class PenawaranOngkos extends Model
     {
         return $this->belongsTo(Penawaran::class, 'penawaran_id', 'id_penawaran');
     }
+
+    public function volume()
+{
+    return $this->belongsTo(\App\Models\Volume::class, 'volume_id', 'id_volume');
+}
+
 }

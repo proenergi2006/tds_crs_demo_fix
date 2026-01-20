@@ -116,16 +116,17 @@
               >
                 <Lucide icon="Eye" class="w-5 h-5"/>
               </RouterLink>
-
-              <!-- Edit + Hapus bila disposisi 1 / 2 (Draft / Menunggu BM) -->
-              <template v-if="String(pen.disposisi_penawaran) === '1' || String(pen.disposisi_penawaran) === '2'">
-                <RouterLink
+              <RouterLink
                   :to="{ name: 'penawarans-edit', params: { id: pen.id_penawaran } }"
                   class="text-emerald-600 hover:text-emerald-800 mx-1 inline-flex items-center"
                   title="Edit"
                 >
                   <Lucide icon="Edit" class="w-5 h-5" />
                 </RouterLink>
+
+              <!-- Edit + Hapus bila disposisi 1 / 2 (Draft / Menunggu BM) -->
+              <template v-if="String(pen.disposisi_penawaran) === '1' || String(pen.disposisi_penawaran) === '2'">
+                
                 <button
                   @click="confirmDelete(pen.id_penawaran, pen.nomor_penawaran)"
                   class="text-red-600 hover:text-red-800 mx-1 inline-flex items-center"
@@ -137,7 +138,14 @@
 
               <!-- Buat PO bila disposisi 4 (Disetujui OM) -->
               <template v-if="String(pen.disposisi_penawaran) === '4'">
-                <RouterLink
+                <!-- <RouterLink
+                  :to="{ name: 'penawarans-edit', params: { id: pen.id_penawaran } }"
+                  class="text-emerald-600 hover:text-emerald-800 mx-1 inline-flex items-center"
+                  title="Edit"
+                >
+                  <Lucide icon="Edit" class="w-5 h-5" />
+                </RouterLink> -->
+                <!-- <RouterLink
                   :to="{
                     name: 'penawarans-po',
                     query: { id_penawaran: pen.id_penawaran, id_customer: pen.id_customer }
@@ -146,7 +154,7 @@
                   title="Buat PO"
                 >
                   <Lucide icon="Pencil" class="w-5 h-5" />
-                </RouterLink>
+                </RouterLink> -->
               </template>
             </Table.Td>
           </Table.Tr>

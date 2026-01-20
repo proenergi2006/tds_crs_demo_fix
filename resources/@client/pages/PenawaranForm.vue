@@ -1,13 +1,29 @@
 <template>
   <div class="p-6 intro-y">
-    <div class="flex items-center mb-4">
-      <h2 class="text-lg font-medium">
-        {{ isEdit ? 'Edit Penawaran' : 'Tambah Penawaran' }}
-      </h2>
-      <Button variant="outline-secondary" class="ml-auto" @click="goBack">
-        Batal
-      </Button>
+    <div class="flex items-center mb-4 gap-3">
+      <div class="flex flex-col gap-2">
+  <h2 class="text-lg font-medium">
+    {{ isEdit ? 'Edit Penawaran' : 'Tambah Penawaran' }}
+  </h2>
+
+  <!-- INFO (muncul hanya saat edit) -->
+  <div v-if="isEdit" class="w-full">
+    <div class="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-amber-800">
+      <span class="text-sm leading-5">
+        <b>Info:</b> Mengubah penawaran akan mengembalikan posisi disposisi ke
+        <b>Draft</b> dan proses approval akan dimulai dari awal.
+      </span>
     </div>
+  </div>
+</div>
+
+
+
+  <Button variant="outline-secondary" class="ml-auto" @click="goBack">
+    Batal
+  </Button>
+</div>
+
 
     <div class="bg-white shadow rounded-lg p-6">
       <form @submit.prevent="submitForm" class="space-y-4">
@@ -129,7 +145,7 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label class="text-sm mb-1 block">Transportir</label>
-              <FormSelect v-model="oaKapalInput.id_transportir">
+              <FormSelect v-model="oaKapalInput.id_transportir" :key="oaSelectKey">
                 <option value="">Pilih Transportir</option>
                 <option v-for="t in transportirs" :key="t.id" :value="String(t.id)">
   {{ t.nama_perusahaan }}
@@ -138,7 +154,7 @@
             </div>
             <div>
               <label class="text-sm mb-1 block">Wilayah Angkut</label>
-              <FormSelect v-model="oaKapalInput.id_angkut_wilayah">
+              <FormSelect v-model="oaKapalInput.id_angkut_wilayah" :key="oaSelectKey">
                 <option value="">Pilih Wilayah</option>
                 <option v-for="w in wilayahs" :key="w.id" :value="String(w.id)">
                   {{ w.provinsi?.nama_provinsi }} - {{ w.kabupaten?.nama_kabupaten }} - {{ w.destinasi }}
@@ -147,9 +163,11 @@
             </div>
             <div>
               <label class="text-sm mb-1 block">Volume</label>
-              <FormSelect v-model="oaKapalInput.id_volume">
+              <FormSelect v-model="oaKapalInput.id_volume" :key="oaSelectKey">
                 <option value="">Pilih Volume</option>
-                <option v-for="v in volumes" :key="v.id_volume" :value="v.id_volume">{{ v.volume }}</option>
+                <option v-for="v in volumes" :key="v.id_volume" :value="String(v.id_volume)">
+                {{ v.volume }}
+              </option>
               </FormSelect>
             </div>
           </div>
@@ -165,14 +183,14 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label class="text-sm mb-1 block">Transportir</label>
-              <FormSelect v-model="oaTruckInput.id_transportir">
+              <FormSelect v-model="oaTruckInput.id_transportir" :key="oaSelectKey">
                 <option value="">Pilih Transportir</option>
                 <option v-for="t in transportirs" :key="t.id" :value="t.id">{{ t.nama_perusahaan }}</option>
               </FormSelect>
             </div>
             <div>
               <label class="text-sm mb-1 block">Wilayah Angkut</label>
-              <FormSelect v-model="oaTruckInput.id_angkut_wilayah">
+              <FormSelect v-model="oaTruckInput.id_angkut_wilayah" :key="oaSelectKey">
                 <option value="">Pilih Wilayah</option>
                 <option v-for="w in wilayahs" :key="w.id" :value="w.id">
                   {{ w.provinsi?.nama_provinsi }} - {{ w.kabupaten?.nama_kabupaten }} - {{ w.destinasi }}
@@ -181,9 +199,11 @@
             </div>
             <div>
               <label class="text-sm mb-1 block">Volume</label>
-              <FormSelect v-model="oaTruckInput.id_volume">
+              <FormSelect v-model="oaTruckInput.id_volume" :key="oaSelectKey">
                 <option value="">Pilih Volume</option>
-                <option v-for="v in volumes" :key="v.id_volume" :value="v.id_volume">{{ v.volume }}</option>
+                <option v-for="v in volumes" :key="v.id_volume" :value="String(v.id_volume)">
+  {{ v.volume }}
+</option>
               </FormSelect>
             </div>
           </div>
@@ -664,6 +684,9 @@ const router = useRouter();
 const idParam = route.params.id as string | undefined;
 const isEdit = Boolean(idParam);
 
+const disposisiPenawaran = ref<number | null>(null);
+
+
 const loading = ref(false);
 const customers = ref<any[]>([]);
 const cabangs = ref<any[]>([]);
@@ -671,7 +694,7 @@ const produks = ref<any[]>([]);
 const transportirs = ref<any[]>([]);
 const wilayahs = ref<any[]>([]);
 const volumes = ref<any[]>([]);
-
+  const oaSelectKey = ref(0);
 // OA
 const oaKapal = ref(0);
 const oaTruck = ref(0);
@@ -686,6 +709,33 @@ interface ItemLine {
   persen: string;
   harga_price_list?: number;
 }
+
+const disposisiLabel = computed(() => {
+  const d = Number(disposisiPenawaran.value ?? 0);
+
+  // mapping sesuai permintaan kamu
+  if (d === 1) return '1 • Sedang diajukan ke BM';
+  if (d === 2) return '2 • Approved Branch Manager';
+  if (d === 3) return '3 • Ditolak Branch Manager';
+  if (d === 4) return '4 • Approved OM';
+
+  // fallback kalau nilainya lain (karena di backend kamu ada sampai 6)
+  if (!d) return 'Draft / Belum diajukan';
+  return `${d} • Status lainnya`;
+});
+
+const disposisiBadgeClass = computed(() => {
+  const d = Number(disposisiPenawaran.value ?? 0);
+
+  // warna bebas, ini default yang aman
+  if (d === 1) return 'bg-yellow-50 text-yellow-700 border-yellow-200';
+  if (d === 2) return 'bg-green-50 text-green-700 border-green-200';
+  if (d === 3) return 'bg-red-50 text-red-700 border-red-200';
+  if (d === 4) return 'bg-blue-50 text-blue-700 border-blue-200';
+
+  return 'bg-slate-50 text-slate-700 border-slate-200';
+});
+
 
 const form = reactive({
   id_customer: '' as number | '',
@@ -910,18 +960,22 @@ async function fetchTransportirWilayahVolume() {
 
 onMounted(async () => {
   await Promise.all([fetchSelects(), fetchTransportirWilayahVolume()]);
+
   if (!isEdit) {
     form.items.push({ id_produk: '', volume_order: '', harga_tebus: '', persen: '' });
   } else {
-    fetchPenawaran();
+    await fetchPenawaran(); // ✅ tunggu sampai selesai
   }
+
   if (!form.discount) form.discount = '0';
 });
 
+
 watch(() => oaKapalInput.id_volume, (val) => {
-  const selectedVolume = volumes.value.find(v => v.id_volume === val);
-  if (selectedVolume) form.ukuran_dasar = selectedVolume.volume.toString();
-});
+  const selectedVolume = volumes.value.find(v => String(v.id_volume) === String(val))
+  if (selectedVolume) form.ukuran_dasar = String(selectedVolume.volume ?? '')
+})
+
 
 // OA Kapal
 watch(() => [oaKapalInput.id_transportir, oaKapalInput.id_angkut_wilayah, oaKapalInput.id_volume], async () => {
@@ -1047,6 +1101,12 @@ async function checkHarga(item: ItemLine) {
 async function fetchPenawaran() {
   try {
     const { data } = await axios.get(`/api/penawarans/${idParam}`);
+    console.log('FETCH PENAWARAN RAW DATA:', data)
+console.log('disposisi_penawaran =', data.disposisi_penawaran)
+console.log('status =', data.status)
+    disposisiPenawaran.value = data.disposisi_penawaran != null
+  ? Number(data.disposisi_penawaran)
+  : null;
     Object.assign(form, {
   id_customer: data.id_customer,
   id_cabang: data.id_cabang,
@@ -1098,6 +1158,7 @@ other_cost: data.other_cost != null ? String(Number(data.other_cost)) : '',
       maximumFractionDigits: 0
     })
   : '',
+  
 
 
 })
@@ -1142,33 +1203,35 @@ other_cost: data.other_cost != null ? String(Number(data.other_cost)) : '',
     // CASE B: backend mengirim array relasi (Eloquent default): data.ongkos = []
     const ongkosList = Array.isArray(data.ongkos) ? data.ongkos : [];
 
-    const kapal = ongkosList.find((o: any) => (o.jenis || '').toUpperCase() === 'KAPAL');
-    const truck = ongkosList.find((o: any) => (o.jenis || '').toUpperCase() === 'TRUCK');
+// kalau kamu simpan "jenis" saat create, gunakan itu.
+// kalau tidak ada, fallback pakai urutan / metode
+const kapal = ongkosList.find((o: any) => (o.jenis || '').toUpperCase() === 'KAPAL');
+const truck = ongkosList.find((o: any) => (o.jenis || '').toUpperCase() === 'TRUCK');
 
-    if (kapal) {
-      // mapping kolom DB -> form input
-      // DB: transportir_id, wilayah_id, volume, ongkos
-      oaKapalInput.id_transportir = String(kapal.transportir_id ?? kapal.id_transportir ?? '');
-      oaKapalInput.id_angkut_wilayah = String(kapal.wilayah_id ?? kapal.id_angkut_wilayah ?? '');
-      oaKapalInput.id_volume = String(kapal.volume ?? kapal.id_volume ?? '');
-      oaKapal.value = Number(kapal.ongkos ?? 0);
-    } else {
-      oaKapalInput.id_transportir = '';
-      oaKapalInput.id_angkut_wilayah = '';
-      oaKapalInput.id_volume = '';
-      oaKapal.value = 0;
-    }
-    if (truck) {
-      oaTruckInput.id_transportir = String(truck.transportir_id ?? truck.id_transportir ?? '');
-      oaTruckInput.id_angkut_wilayah = String(truck.wilayah_id ?? truck.id_angkut_wilayah ?? '');
-      oaTruckInput.id_volume = String(truck.volume ?? truck.id_volume ?? '');
-      oaTruck.value = Number(truck.ongkos ?? 0);
-    } else {
-      oaTruckInput.id_transportir = '';
-      oaTruckInput.id_angkut_wilayah = '';
-      oaTruckInput.id_volume = '';
-      oaTruck.value = 0;
-    }
+if (kapal) {
+  oaKapalInput.id_transportir = String(kapal.transportir_id ?? '');
+  oaKapalInput.id_angkut_wilayah = String(kapal.wilayah_id ?? '');
+  oaKapalInput.id_volume = String(kapal.volume_id ?? '');   // ✅ PENTING: volume_id
+  oaKapal.value = Number(kapal.ongkos ?? 0);
+} else {
+  oaKapalInput.id_transportir = '';
+  oaKapalInput.id_angkut_wilayah = '';
+  oaKapalInput.id_volume = '';
+  oaKapal.value = 0;
+}
+
+if (truck) {
+  oaTruckInput.id_transportir = String(truck.transportir_id ?? '');
+  oaTruckInput.id_angkut_wilayah = String(truck.wilayah_id ?? '');
+  oaTruckInput.id_volume = String(truck.volume_id ?? '');   // ✅ PENTING: volume_id
+  oaTruck.value = Number(truck.ongkos ?? 0);
+} else {
+  oaTruckInput.id_transportir = '';
+  oaTruckInput.id_angkut_wilayah = '';
+  oaTruckInput.id_volume = '';
+  oaTruck.value = 0;
+}
+oaSelectKey.value++;
 
 form.oat = Number(data.oat).toLocaleString('id-ID'),
     form.items = data.items.map((it: any) => ({
@@ -1206,7 +1269,7 @@ if ((form.metode === 'CIF' || form.metode === 'DAP') && oaKapal.value > 0) {
     jenis: 'KAPAL',
     id_transportir: oaKapalInput.id_transportir,
     id_angkut_wilayah: oaKapalInput.id_angkut_wilayah,
-    id_volume: oaKapalInput.id_volume,
+    id_volume: parseInt(oaKapalInput.id_volume || '0', 10),  // ✅
     ongkos: oaKapal.value,
   })
 }
@@ -1217,7 +1280,7 @@ if ((form.metode === 'DAP' || form.metode === 'FOT') && oaTruck.value > 0) {
     jenis: 'TRUCK',
     id_transportir: oaTruckInput.id_transportir,
     id_angkut_wilayah: oaTruckInput.id_angkut_wilayah,
-    id_volume: oaTruckInput.id_volume,
+    id_volume: parseInt(oaTruckInput.id_volume || '0', 10),  // ✅
     ongkos: oaTruck.value,
   })
 }
