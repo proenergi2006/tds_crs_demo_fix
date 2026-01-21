@@ -17,3 +17,6 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+/resources/@client/main.ts
+Dockerfile
+/app/Providers/AppServiceProvider.php
