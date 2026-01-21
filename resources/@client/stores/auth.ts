@@ -17,7 +17,7 @@ export const useAuthStore = defineStore('auth', {
       try {
         const { data } = await axios.get('/api/user')
         this.user = data
-        this.startIdleTimer() // ⬅️ TAMBAHAN AMAN
+        //this.startIdleTimer() // ⬅️ TAMBAHAN AMAN
       } catch {
         this.user = null
       }
