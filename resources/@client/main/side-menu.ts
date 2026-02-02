@@ -84,21 +84,21 @@ const menu: Array<Menu | "divider"> = [
         pageName: "penawarans-list",
         title: "penawaran",
       },
-      {
-        icon: 'MapPin',
-        pageName: 'lcr-list',
-        title: 'LCR',
-      },
-      {
-        icon: 'File',
-        pageName: 'customer-verifications',
-        title: 'Generate Link',
-      },
-      {
-        icon: 'File',
-        pageName: 'review-customer',
-        title: 'Review Data Customer',
-      },
+      // {
+      //   icon: 'MapPin',
+      //   pageName: 'lcr-list',
+      //   title: 'LCR',
+      // },
+      // {
+      //   icon: 'File',
+      //   pageName: 'customer-verifications',
+      //   title: 'Generate Link',
+      // },
+      // {
+      //   icon: 'File',
+      //   pageName: 'review-customer',
+      //   title: 'Review Data Customer',
+      // },
     
      
      
@@ -106,11 +106,11 @@ const menu: Array<Menu | "divider"> = [
     ],
   },
 
-  {
-    icon: "File",
-    pageName: "po-customers-index",
-    title: "PO Customer",
-  },
+  // {
+  //   icon: "File",
+  //   pageName: "po-customers-index",
+  //   title: "PO Customer",
+  // },
 
   {
     icon: 'File',
@@ -123,11 +123,11 @@ const menu: Array<Menu | "divider"> = [
     title: 'Review Data Customer Logistik',
   },
  
-  {
-    icon: 'File',
-    pageName: 'verify-data-customer-om',
-    title: 'Review Data Customer OM',
-  },
+  // {
+  //   icon: 'File',
+  //   pageName: 'verify-data-customer-om',
+  //   title: 'Review Data Customer OM',
+  // },
 
   {
     icon: 'CheckCircle',
@@ -150,17 +150,17 @@ const menu: Array<Menu | "divider"> = [
     ],
   },
 
-  {
-    icon: 'File',
-    pageName: 'verify-data-customer-bm',
-    title: 'Review Customer BM',
-  },
+  // {
+  //   icon: 'File',
+  //   pageName: 'verify-data-customer-bm',
+  //   title: 'Review Customer BM',
+  // },
 
-  {
-    icon: 'ClipboardCheck',
-    pageName: 'sales-confirmations-bm',
-    title: 'Sales Confirmation (BM)',
-  },
+  // {
+  //   icon: 'ClipboardCheck',
+  //   pageName: 'sales-confirmations-bm',
+  //   title: 'Sales Confirmation (BM)',
+  // },
 
   {
     icon: "CheckCircle",

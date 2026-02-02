@@ -293,20 +293,25 @@ const subtotal = computed(() =>
 
 // 💰 Diskon total (langsung di total, bukan per item)
 const totalDiskon = computed(() => Number(penawaran.value.discount) || 0)
+const dpp = computed(() =>
+  subtotal.value - totalDiskon.value + totalOAT.value
+)
+
+
 
 // 💰 PPN 11%
-const ppn = computed(() => (subtotal.value - totalDiskon.value) * 0.11)
+const ppn = computed(() => Math.round(dpp.value * 0.11))
 
-// 🚛 Total OAT = OAT per volume × total volume order
+
+
+
 const totalOAT = computed(() => {
   const oat = Number(penawaran.value.oat) || 0
   return oat * totalVolume.value
 })
 
-// 💵 Grand Total = Subtotal - Diskon + PPN + OAT
-const grandTotal = computed(() =>
-  subtotal.value - totalDiskon.value + ppn.value + totalOAT.value
-)
+const grandTotal = computed(() => dpp.value + ppn.value)
+
 
 // ✅ Verifikasi
 async function verifikasi() {

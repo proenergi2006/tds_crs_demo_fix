@@ -30,15 +30,27 @@
               <small class="text-slate-500">Otomatis sesuai user yang login</small>
             </div>
 
+            <div>
+              <FormLabel for="nama_perusahaan">Nama Perusahaan *</FormLabel>
+              <FormInput
+  id="nama_perusahaan"
+  v-model="form.nama_perusahaan"
+  placeholder="Nama Perusahaan"
+  class="uppercase"
+  :class="{'border-rose-500': showErrors && !form.nama_perusahaan.trim()}"
+/>
+
+            </div>
+
             <!-- 2. Email -->
             <div>
-              <FormLabel for="email">Email *</FormLabel>
+              <FormLabel for="email">Email </FormLabel>
               <FormInput
                 id="email"
                 ref="emailRef"
                 v-model="form.email"
                 placeholder="Email"
-                :class="{'border-rose-500': showErrors && !form.email.trim()}"
+              
                 autocomplete="off"
               />
             </div>
@@ -105,15 +117,7 @@
             </div>
 
             <!-- 7. Nama Perusahaan (opsional) -->
-            <div>
-              <FormLabel for="nama_perusahaan">Nama Perusahaan</FormLabel>
-              <FormInput
-                id="nama_perusahaan"
-                v-model="form.nama_perusahaan"
-                placeholder="Nama Perusahaan (opsional)"
-                class="uppercase"
-              />
-            </div>
+       
 
             <!-- 8. Alamat Perusahaan (opsional) -->
             <div>
@@ -210,6 +214,7 @@ const kabupatenRef = ref<HTMLElement|null>(null)
 const teleponRef   = ref<HTMLInputElement|null>(null)
 const jenisRef     = ref<HTMLElement|null>(null)
 const userRef      = ref<HTMLElement|null>(null)
+  const namaPerusahaanRef = ref<HTMLInputElement|null>(null)
 
 // data awal
 async function fetchUsers() {
@@ -243,14 +248,14 @@ const showErrors = ref(false)
 
 function missingFields(): string[] {
   const m: string[] = []
-  // user tidak ikut validasi (auto dari sesi)
-  if (!form.email.trim())   m.push('Email')
-  if (!form.id_provinsi)    m.push('Provinsi')
-  if (!form.id_kabupaten)   m.push('Kabupaten')
-  if (!form.telepon.trim()) m.push('Telepon')
-  if (!form.jenis_customer) m.push('Jenis Customer')
+  if (!form.nama_perusahaan.trim()) m.push('Nama Perusahaan')
+  if (!form.id_provinsi)            m.push('Provinsi')
+  if (!form.id_kabupaten)           m.push('Kabupaten')
+  if (!form.telepon.trim())         m.push('Telepon')
+  if (!form.jenis_customer)         m.push('Jenis Customer')
   return m
 }
+
 
 async function showMissingAlert(miss: string[]) {
   const list = `<ul style="text-align:left;margin:8px 0 0 14px;">${miss.map(i=>`<li>${i}</li>`).join('')}</ul>`
@@ -264,12 +269,13 @@ async function showMissingAlert(miss: string[]) {
 
 async function focusFirstMissing() {
   await nextTick()
-  if (!form.email.trim() && emailRef.value)       return emailRef.value.focus()
-  if (!form.id_provinsi && provinsiRef.value)     return (provinsiRef.value as HTMLSelectElement).focus()
-  if (!form.id_kabupaten && kabupatenRef.value)   return (kabupatenRef.value as HTMLSelectElement).focus()
-  if (!form.telepon.trim() && teleponRef.value)   return teleponRef.value.focus()
-  if (!form.jenis_customer && jenisRef.value)     return (jenisRef.value as HTMLSelectElement).focus()
+  if (!form.nama_perusahaan.trim() && namaPerusahaanRef.value) return namaPerusahaanRef.value.focus()
+  if (!form.id_provinsi && provinsiRef.value)                  return (provinsiRef.value as HTMLSelectElement).focus()
+  if (!form.id_kabupaten && kabupatenRef.value)                return (kabupatenRef.value as HTMLSelectElement).focus()
+  if (!form.telepon.trim() && teleponRef.value)                return teleponRef.value.focus()
+  if (!form.jenis_customer && jenisRef.value)                  return (jenisRef.value as HTMLSelectElement).focus()
 }
+
 
 async function submit() {
   error.value = ''

@@ -78,6 +78,17 @@ if (token) {
   axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
 }
 
+axios.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err.response?.status === 401) {
+      // token expired / session expired
+      const auth = useAuthStore(pinia)
+      auth.forceLogout()
+    }
+    return Promise.reject(err)
+  }
+)
 
 const app = createApp(App);
 app.config.globalProperties.$axios = axios
