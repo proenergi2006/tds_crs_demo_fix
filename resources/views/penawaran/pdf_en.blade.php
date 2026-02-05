@@ -324,7 +324,8 @@ Sides.  &mdash; Once get QC clearance, barge will depart to Discharge Port';
         </td>
       </tr>
       <tr>
-        <td class="no">7.</td><td class="label"><b>Receiving Point & QC</b></td><td class="colon">:</td>
+        <td class="no">7.</td><td class="label"><b>
+          Handover Point & Unloading TC</b></td><td class="colon">:</td>
         <td class="value">{!! $penawaran->keterangan !!}</td>
       </tr>
     
