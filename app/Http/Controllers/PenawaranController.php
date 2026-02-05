@@ -32,7 +32,7 @@ class PenawaranController extends Controller
     /** GET /api/penawarans */
     public function index(Request $request)
     {
-        $perPage = $request->query('per_page', 10);
+        $perPage = $request->query('per_page', 1000);
         $search  = $request->query('search');
 
         $query = Penawaran::with(['customer', 'cabang', 'items.produk'])
