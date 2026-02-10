@@ -13,8 +13,8 @@ class OngkosKapalController extends Controller
 {
     try {
         $data = OngkosKapal::with(['transportir', 'angkutWilayah', 'details.volume'])
-    ->latest()
-    ->get();
+            ->latest()
+            ->paginate($request->get('per_page', 100));
 
         return response()->json($data);
     } catch (\Throwable $e) {

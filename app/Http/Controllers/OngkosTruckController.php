@@ -12,8 +12,8 @@ class OngkosTruckController extends Controller
     public function index(Request $request)
     {
         $data = OngkosTruck::with(['transportir', 'angkutWilayah', 'details.volume'])
-        ->latest()
-        ->get(); // 🔥 ambil semua
+            ->latest()
+            ->paginate($request->get('per_page', 100));
 
         return response()->json($data);
     }
