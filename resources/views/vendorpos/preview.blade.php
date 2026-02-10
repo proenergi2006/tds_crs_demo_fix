@@ -130,7 +130,7 @@
     <tr>
       <td class="logo" style="width:50%">
         @if($logoLeft)
-          <img src="{{ $logoLeft }}" alt="Tri Daya Selaras">
+        <img src="{{ $logoLeft }}" width="95px" alt="Tri Daya Selaras">
         @else
           <img src="{{ public_path('images/tds.png') }}" alt="Tri Daya Selaras">
         @endif

@@ -10,8 +10,8 @@ class WilayahAngkutController extends Controller
     public function index(Request $request)
     {
         $data = WilayahAngkut::with(['provinsi', 'kabupaten'])
-            ->latest()
-            ->paginate($request->get('per_page', 10));
+        ->latest()
+        ->get(); // 🔥 ambil semua
 
         return response()->json($data);
     }

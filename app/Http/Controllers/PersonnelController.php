@@ -11,7 +11,9 @@ class PersonnelController extends Controller
 {
     public function index()
     {
-        return Personnel::with('transportir')->latest()->paginate(10);
+        return Personnel::with('transportir')
+        ->latest()
+        ->get();
     }
 
     public function store(Request $request)

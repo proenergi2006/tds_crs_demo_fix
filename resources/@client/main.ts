@@ -81,11 +81,11 @@ if (token) {
 axios.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
-      // token expired / session expired
-      const auth = useAuthStore(pinia)
-      auth.forceLogout()
-    }
+    // if (err.response?.status === 401) {
+    //   // token expired / session expired
+    //   const auth = useAuthStore(pinia)
+    //   auth.forceLogout()
+    // }
     return Promise.reject(err)
   }
 )
