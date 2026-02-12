@@ -124,7 +124,7 @@ async function onSubmit() {
         <div class="flex-col hidden min-h-screen xl:flex">
           <a href="#" class="flex items-center pt-5 -intro-x">
             <img class="w-14" :src="logoUrl" alt="Logo"/>
-            <span class="ml-3 text-lg text-white">Tri Daya Selaras</span>
+            <span class="ml-3 text-lg text-white">Tri Daya Selaras 1</span>
           </a>
           <div class="my-auto">
             <img class="w-1/2 -mt-16 -intro-x" :src="logoUrl" alt="Illust"/>
