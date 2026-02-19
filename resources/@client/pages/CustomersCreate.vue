@@ -292,6 +292,7 @@ async function submit() {
   try {
     const payload = {
       ...form,
+      
       id_user:      Number(form.id_user),      // tetap kirim, tapi server akan override
       id_provinsi:  Number(form.id_provinsi),
       id_kabupaten: Number(form.id_kabupaten),
